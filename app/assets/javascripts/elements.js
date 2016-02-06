@@ -53,4 +53,28 @@ $(document).ready(function() {
   editor.on('changes', function(instance, changes){
     console.log('editor changed', instance.getWrapperElement().parentNode);
   });
+
+  $('.font-size').on('click', function() {
+    var cur_size = parseInt( $('.CodeMirror').css('font-size') );
+    if ( $(this).text() === '+' ) {
+    console.log('font size inc', cur_size);
+      $('.CodeMirror').css('font-size', (cur_size + 2) + 'px');
+    } else {
+      console.log('dec size');
+      $('.CodeMirror').css('font-size', (cur_size - 2) + 'px');
+    }
+
+  });
+
+  console.log('modes', CodeMirror.modes, CodeMirror.mimeModes);
+  $('#code').on('change', 'select', function(event) {
+    console.log('select changed');
+    var setting = $(this).attr('id');
+    var settingVal = $(this).val();
+    if ( setting === 'theme' ) {
+      editor.setOption('theme', settingVal );
+    } else if ( setting === 'language') {
+      editor.setOption('mode', settingVal );
+    }
+  });
 });

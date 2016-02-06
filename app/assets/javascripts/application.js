@@ -14,5 +14,9 @@
 //= require jquery_ujs
 //= require aloha.min
 //= require codemirror
-//= require javascript
+//= require codemirror/mode/javascript
+//= require codemirror/mode/ruby
+//= require codemirror/mode/css
+//= require codemirror/mode/xml
+//= require codemirror/mode/htmlmixed
 //= require_tree .

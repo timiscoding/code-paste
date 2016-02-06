@@ -28,6 +28,24 @@
 
 <button id="cool-btn">cool</button>
 
-<div id="code"></div>
+<div id="code">
+  <div class="controls">
+    <button class="font-size">+</button>
+    <button class="font-size">-</button>
+    <label for="theme">Theme</label>
+    <select id="theme">
+      <option value="default">Default</option>
+      <option value="blackboard">Blackboard</option>
+    </select>
+    <label for="language">Language</label>
+    <select id="language">
+      <option value="javascript">Javascript</option>
+      <option value="ruby">Ruby</option>
+      <option value="css">CSS</option>
+      <option value="htmlmixed">HTML</option>
+    </select>
+  </div>
+
+</div>
 
 <%= link_to 'Back', elements_path %>
