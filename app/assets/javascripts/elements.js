@@ -35,7 +35,22 @@ $(document).ready(function() {
     crazyCoolProperty: "You selected: ",
     action: function (boundaries, selection, command, event) {
       console.log(command.crazyCoolProperty + aloha.markers.hint(boundaries));
+      console.log('bounds', boundaries, selection, command, event, this);
+
     }
   };
   $('#cool-btn').on('click', aloha.ui.command(command));
+
+  var editor = CodeMirror(document.getElementById('code'), {
+    value: 'var x = 1',
+    tabSize: 2,
+    lineNumbers: true
+  });
+  console.log( 'code contente ', editor.getValue() );
+  editor.setValue('var bunnies = 100;');
+  editor.setSize(500, 100);
+
+  editor.on('changes', function(instance, changes){
+    console.log('editor changed', instance.getWrapperElement().parentNode);
+  });
 });
