@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @element.title %>
+</p>
+
+<p>
+  <strong>Page:</strong>
+  <%= @element.page_id %>
+</p>
+
+<p>
+  <strong>Content:</strong>
+  <%= @element.content %>
+</p>
+
+<p>
+  <strong>Link:</strong>
+  <%= @element.link %>
+</p>
+
+<p>
+  <strong>Pos x:</strong>
+  <%= @element.pos_x %>
+</p>
+
+<p>
+  <strong>Pos y:</strong>
+  <%= @element.pos_y %>
+</p>
+
+<p>
+  <strong>Width:</strong>
+  <%= @element.width %>
+</p>
+
+<p>
+  <strong>Height:</strong>
+  <%= @element.height %>
+</p>
+
+<%= link_to 'Edit', edit_element_path(@element) %> |
+<%= link_to 'Back', elements_path %>
