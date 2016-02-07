@@ -21,7 +21,26 @@
   </div>
   <div class="field">
     <%= f.label :content %><br>
-    <%= f.text_area :content %>
+    <%= f.text_area :content, :style => 'display:none' %>
+    <div id="code">
+      <div class="controls">
+        <button class="font-size">+</button>
+        <button class="font-size">-</button>
+        <label for="theme">Theme</label>
+        <select id="theme">
+          <option value="default">Default</option>
+          <option value="blackboard">Blackboard</option>
+        </select>
+        <label for="language">Language</label>
+        <select id="language">
+          <option value="javascript">Javascript</option>
+          <option value="ruby">Ruby</option>
+          <option value="css">CSS</option>
+          <option value="htmlmixed">HTML</option>
+        </select>
+        <button class="save">Save</button>
+      </div>
+    </div>
   </div>
   <div class="field">
     <%= f.label :link %><br>

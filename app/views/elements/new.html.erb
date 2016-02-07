@@ -1,51 +1,11 @@
 <h1>New Element</h1>
 
-<%# render 'form' %>
+<%= render 'form' %>
 
-<div class="element">
-  <div class="controls">
-    <button class="action-bold-1">B</button>
-    <button class="action-italic-1">I</button>
-    <button class="action-underline-1">U</button>
-    <button class="action-unformat-1">X</button>
-  </div>
-  <div class="content">
-  This is an element
-  </div>
-</div>
 
-<div class="element">
-  <div class="controls">
-    <button class="action-bold-2">B</button>
-    <button class="action-italic-2">I</button>
-    <button class="action-underline-2">U</button>
-    <button class="action-unformat-2">X</button>
-  </div>
-  <div class="content">
-  This is an element
-  </div>
-</div>
 
-<button id="cool-btn">cool</button>
 
-<div id="code">
-  <div class="controls">
-    <button class="font-size">+</button>
-    <button class="font-size">-</button>
-    <label for="theme">Theme</label>
-    <select id="theme">
-      <option value="default">Default</option>
-      <option value="blackboard">Blackboard</option>
-    </select>
-    <label for="language">Language</label>
-    <select id="language">
-      <option value="javascript">Javascript</option>
-      <option value="ruby">Ruby</option>
-      <option value="css">CSS</option>
-      <option value="htmlmixed">HTML</option>
-    </select>
-  </div>
 
-</div>
+
 
 <%= link_to 'Back', elements_path %>
