@@ -12,30 +12,7 @@
 
 <p>
   <strong>Content:</strong>
-  <script>
-    var app = app || {};
-    app.content = "<%= @element.content.gsub("\n", '\n').gsub('"', '\"').html_safe %>"
-  </script>
-  <div id="code">
-    <div class="controls">
-      <button class="font-size">+</button>
-      <button class="font-size">-</button>
-      <label for="theme">Theme</label>
-      <select id="theme">
-        <option value="default">Default</option>
-        <option value="blackboard">Blackboard</option>
-      </select>
-      <label for="language">Language</label>
-      <select id="language">
-        <option value="javascript">Javascript</option>
-        <option value="ruby">Ruby</option>
-        <option value="css">CSS</option>
-        <option value="htmlmixed">HTML</option>
-      </select>
-      <button class="save">Save</button>
-    </div>
-
-  </div>
+  <%= @element.content %>
 </p>
 
 <p>

@@ -1,17 +1,45 @@
+_.templateSettings = {
+ evaluate : /\{\[([\s\S]+?)\]\}/g,     // {[ console.log("Hello"); ]} - runs
+ interpolate : /\{\{([\s\S]+?)\}\}/g   // {{ key }} - interpolates
+};
+
 $(document).ready(function() {
   console.log('running js');
+  // add code editor template
 
+  var codeTemplater = _.template( $('#codeTemplate').html() );
+
+  // add template to page and include element id if it exists
+  var element_route = window.location.href.match( /elements\/(\d+)$/ );
+  // var element_route = [null, '27'];
+  console.log('elt route ', element_route);
+  if ( element_route !== null ){
+    $('body').append( codeTemplater({ element_id: element_route[1] }) );
+  } else {
+    $('body').append( codeTemplater({ element_id: ""}) );
+  }
+
+  // add code editor to template
   // create a new editor and configure it
-  var editor = CodeMirror(document.getElementById('code'), {
-    value: 'var x = 1',
-    tabSize: 2,
-    lineNumbers: true
+  // console.log( 'editor', document.getElementsById('code') );
+  var editor = CodeMirror(function (editor) {
+      console.log('editor', editor);
+      $('.code').last().append( editor );
+    }, {
+      value: '// your code here',
+      tabSize: 2,
+      lineNumbers: true
   });
 
+
   // testing getter and setter and size
-  if ( typeof app !== 'undefined' && typeof app.content !== 'undefined') {
-    console.log( 'code contente ', app.content );
-    editor.setValue(app.content);
+  if ( element_route !== null ){
+    var elt_id = element_route[1];
+    console.log('matches ', element_route);
+    codeTemplater({ element_id: elt_id });
+    $.getJSON('/elements/' + element_route[1], function (data, responseStatus, jqXHR) {
+      editor.setValue(data.content);
+    });
   }
   // editor.setSize(500, 100);
 
@@ -35,7 +63,7 @@ $(document).ready(function() {
 
   // when a theme or language is selected, update the editor
   console.log('modes', CodeMirror.modes, CodeMirror.mimeModes);
-  $('#code').on('change', 'select', function(event) {
+  $('.code').on('change', 'select', function(event) {
     console.log('select changed');
     var setting = $(this).attr('id');
     var settingVal = $(this).val();
@@ -47,10 +75,13 @@ $(document).ready(function() {
   });
 
   // send an AJAX POST request to create a new element
-  $('#code .save').on('click', function(e) {
+  $('.code .save').on('click', function(e) {
     e.preventDefault();
+    var $saveButton = $( this );
+    $saveButton.prop('disabled', true);
+    $saveButton.siblings('.status').text('Saving...');
     //title, :page_id, :content, :link, :pos_x, :pos_y, :width, :height)
-    var $codeElement = $( this ).closest('#code');
+    var $codeElement = $( this ).closest('.code');
     var url = '/elements';
     var code = {
       element: {
@@ -64,14 +95,30 @@ $(document).ready(function() {
         height: 100
       }
     };
-    // console.log(['save this', url, '|', JSON.stringify(code, null, 4), '|'].join(' '));
-    $.ajax('/elements', {
-      method: 'post',
+
+    var methodType, url;
+    var elt_id = $('.code').data('id'); // element id that identifies an element in rails
+    if ( elt_id ) { // element id exists so update an existing element in rails
+      methodType = 'put';
+      url = '/elements/' + elt_id;
+    } else { // element id doesn't exist so create a new element in rails
+      methodType = 'post';
+      url = '/elements';
+    }
+
+    $.ajax(url, {
+      method: methodType,
       dataType: 'json',
       data: code
     }).done(function( response ){
-      console.log('saved', response);
+      console.log('saved. codeElement', $codeElement, response.id);
       $codeElement.data('id', response.id);
+
+      $saveButton.siblings('.status').text("Last updated: " + moment().format('h:mm:ss a') );
+    }).fail(function(){
+      $saveButton.siblings('.status').text("Something went wrong, try again.");
+    }).always(function() {
+      $saveButton.prop('disabled', false);
     });
   });
 });

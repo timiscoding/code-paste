@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'elements#new'
+  root 'elements#change'
   resources :pages
   resources :elements
   resources :users
