@@ -5,8 +5,7 @@ _.templateSettings = {
  interpolate : /\{\{([\s\S]+?)\}\}/g   // {{ key }} - interpolates
 };
 
-var createUpdateElement = function (e) {
-    e.preventDefault();
+var createUpdateElement = function () {
     var $saveButton = $( this );
     $saveButton.prop('disabled', true);
     $saveButton.siblings('.status').text('Saving...');
@@ -52,6 +51,27 @@ var createUpdateElement = function (e) {
     });
 };
 
+var deleteElement = function() {
+  console.log('delete element');
+  var elt_id = $('.code').data('id');
+  var url = '/elements/' + elt_id;
+  if (elt_id){ // element id exists so destroy element in rails
+    $.ajax(url, {
+      method: 'delete',
+      dataType: 'json'
+    }).done(function() {
+      console.log('element destroyed');
+      $('.code').remove();
+      app.editor = null;
+    }).fail(function() {
+      $('.code').find('.status').text('Something went wrong. Try again');
+    });
+  } else { // element doesn't exist on server so just remove the gui element
+    $('.code').remove();
+    app.editor = null;
+  }
+};
+
 var changeLanguageOrTheme = function(event) {
   console.log('select changed');
   var setting = $(this).attr('id');
@@ -63,8 +83,7 @@ var changeLanguageOrTheme = function(event) {
   }
 };
 
-var changeFontSize = function(e) {
-  e.preventDefault();
+var changeFontSize = function() {
   var cur_size = parseInt( $('.CodeMirror').css('font-size') );
   if ( $(this).text() === '+' ) {
   console.log('font size inc', cur_size);
@@ -81,7 +100,7 @@ $(document).ready(function() {
   var codeTemplater = _.template( $('#codeTemplate').html() );
   var $codeElement = $( codeTemplater() );
   // simulate retrieve existing element from rails
-  var element_id = 42;
+  var element_id;
   if ( element_id ){
     console.log('retrieving element');
     $.getJSON('/elements/' + element_id).done( function (data, responseStatus, jqXHR) {
@@ -119,6 +138,8 @@ $(document).ready(function() {
 
   // send an AJAX POST request to create/update a new element
   $('.code .save').on('click', createUpdateElement);
+
+  $codeElement.on('click', '.delete', deleteElement);
 
 
 });
