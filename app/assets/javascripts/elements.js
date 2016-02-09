@@ -1,6 +1,14 @@
 var app = app || {};
 app.editors = {};
 app.editor_id = 0;
+// app.expiries = [
+//   { label: "Never", time: "" },
+//   { label: "10 minutes", time: moment().add(10, 'minutes').format() },
+//   { label: "1 hour", time: moment().add(1, 'hours').format() },
+//   { label: "1 day", time: moment().add(1, 'days').format() },
+//   { label: "1 week", time: moment().add(1, 'weeks').format() }
+// ];
+app.expiries = [ "Change expiry", "Never", "1 minute", "10 minutes", "1 hour", "1 day", "1 week" ];
 
 _.templateSettings = {
  evaluate : /\{\[([\s\S]+?)\]\}/g,     // {[ console.log("Hello"); ]} - runs
@@ -138,8 +146,105 @@ var changeFontSize = function() {
   app.editors[editor_id].refresh(); // update editor so cursor aligns with font resizing
 };
 
+var updateExpiry = function() {
+  var selected = $( this ).find('option:selected').text();
+  console.log('expiry selected ', selected );
+  console.log('expiry time changed to ', app.expiries[selected]);
+  var expiry_time;
+  switch(selected){
+    case "Never":
+      console.log('set expiry to nil');
+      expiry_time = "";
+      break;
+    case "1 minute":
+      expiry_time = moment().add(1, 'minutes').format();
+      break;
+    case "10 minutes":
+      expiry_time = moment().add(10, 'minutes').format();
+      break;
+    case "1 hour":
+      expiry_time = moment().add(1, 'hours').format();
+      break;
+    case "1 day":
+      expiry_time = moment().add(1, 'days').format();
+      break;
+    case "1 week":
+      expiry_time = moment().add(1, 'weeks').format();
+      break;
+    default: // 'Change expiry'
+      return;
+  }
+
+  $.ajax('/pages/' + getPageID(), {
+    method: 'put',
+    dataType: 'json',
+    data: {
+      page: {
+        expiry: expiry_time
+      }
+    }
+  }).done(function() {
+    $('#expiry-status').countdown('resume');
+    $('#expiry-status').text('Page expires: ' + countdownFromNow(expiry_time) );
+  }).fail(function() {
+    $('#expiry-status').countdown('pause');
+    $('#expiry-status').text('Something went wrong. Try again');
+  });
+};
+
+var timeFromNow = function(expiry_time) {
+  var expiry;
+  if ( expiry_time ) {
+    expiry = moment( expiry_time ).fromNow();
+  } else {
+    expiry = 'never';
+  }
+  return expiry;
+};
+
+var countdownFromNow = function(expiry_time) {
+  var expiry = moment(expiry_time);
+  // console.log('diff', expiry.diff(now, 'days'));
+
+  if ( expiry_time ) {
+    $("#expiry-status")
+      .countdown(moment(expiry_time).toDate(), function(event) {
+        var ftime = "Page expires:";
+        if ( !!event.offset.totalDays ) { ftime += " %-D day%!D"; }
+        if ( !!event.offset.hours ) { ftime += " %-H hr%!H"}
+        ftime += " %-M min %-S sec";
+        // if ( !!event.offset.minutes ) { ftime += " %M min"}
+        // if ( !!event.offset.seconds ) { ftime += " %S sec"}
+        $(this).text(
+          event.strftime(ftime) //'Page expires: %-D day%!D %H:%M:%S')
+        );
+    }).on('finish.countdown', function(event) {
+      $(this).text('Page expired!');
+    });
+  } else {
+    $("#expiry-status").text('never');
+  }
+};
+
+var getPageID = function() {
+  var path_match = location.href.match( /pages\/(\d+)$/ );
+  return path_match[1];
+};
+
 $(document).ready(function() {
   console.log('running js');
+
+  // populate expiry select input
+  console.log('expiry ' + JSON.stringify(app.expiries) );
+  // app.expiries.forEach( function(expiry) {
+  //   $('#expiry').append( $('<option>').val(expiry.time).text(expiry.label) );
+  // });
+  app.expiries.forEach( function( label ){
+    $('select#expiry').append( $('<option>').text(label) );
+  });
+
+  //update expiry time when user changes select input
+  $('select#expiry').on('change', updateExpiry);
 
   // get code element template
   app.codeTemplater = _.template( $('#codeTemplate').html() );
@@ -149,7 +254,9 @@ $(document).ready(function() {
   var page_id = path_match[1];
 
   $.getJSON('/pages/' + page_id).done( function (data) {
-    console.log('data for page 3');
+    console.log('data for page');
+    // $('#expiry-status').text('Page expires: ' + timeFromNow(data.expiry) );
+    countdownFromNow(data.expiry);
     data.elements.forEach( function(elt) {
       console.log(elt.title, elt.content);
       var $codeElement = createUIElement(elt.id);
@@ -161,18 +268,6 @@ $(document).ready(function() {
     });
   });
 
-  // simulate retrieve existing element from rails
-  var element_id;
-  if ( element_id ){
-    console.log('retrieving element id ', element_id);
-    var $codeElement = createUIElement(element_id);
-
-    console.log('retrieving element');
-    $.getJSON('/elements/' + element_id).done( function (data, responseStatus, jqXHR) {
-      var editor_id = $codeElement.data('editor-id');
-      app.editors[editor_id].setValue(data.content);
-    });
-  }
   // editor.setSize(500, 100);
 
 

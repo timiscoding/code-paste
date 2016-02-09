@@ -10,6 +10,10 @@ class PagesController < ApplicationController
   # GET /pages/1
   # GET /pages/1.json
   def show
+    if @page.expiry.present? && @page.expiry < Time.now # page has expired
+      # @page.destroy
+      not_found
+    end
   end
 
   # GET /pages/new

@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require underscore
 //= require moment
+//= require jquery.countdown
 //= require aloha.min
 //= require codemirror
 //= require codemirror/mode/javascript
