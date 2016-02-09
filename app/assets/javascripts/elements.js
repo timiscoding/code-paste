@@ -46,10 +46,12 @@ var createUpdateElement = function () {
     var $codeElement = $( this ).closest('.code');
     var url = '/elements';
     var editor_id = $codeElement.data('editor-id');
+    var path_match = location.href.match( /pages\/(\d+)$/ );
+    var a_page_id = path_match[1];
     var code = {
       element: {
         title: 'new element',
-        page_id: 100,
+        page_id: a_page_id,
         content: app.editors[editor_id].getValue(),
         link: 'www.google.com',
         pos_x: 1,
@@ -141,8 +143,26 @@ $(document).ready(function() {
 
   // get code element template
   app.codeTemplater = _.template( $('#codeTemplate').html() );
+
+  // get all elements for this page
+  var path_match = location.href.match( /pages\/(\d+)$/ );
+  var page_id = path_match[1];
+
+  $.getJSON('/pages/' + page_id).done( function (data) {
+    console.log('data for page 3');
+    data.elements.forEach( function(elt) {
+      console.log(elt.title, elt.content);
+      var $codeElement = createUIElement(elt.id);
+
+      $.getJSON('/elements/' + elt.id).done( function (data) {
+        var editor_id = $codeElement.data('editor-id');
+        app.editors[editor_id].setValue(elt.content);
+      });
+    });
+  });
+
   // simulate retrieve existing element from rails
-  var element_id = 36;
+  var element_id;
   if ( element_id ){
     console.log('retrieving element id ', element_id);
     var $codeElement = createUIElement(element_id);

@@ -1,19 +1,25 @@
-<p id="notice"><%= notice %></p>
+<button class="add-code">Add code element</button>
 
-<p>
-  <strong>User:</strong>
-  <%= @page.user_id %>
-</p>
-
-<p>
-  <strong>Expiry:</strong>
-  <%= @page.expiry %>
-</p>
-
-<p>
-  <strong>Title:</strong>
-  <%= @page.title %>
-</p>
-
-<%= link_to 'Edit', edit_page_path(@page) %> |
-<%= link_to 'Back', pages_path %>
+<script type="text/template" id="codeTemplate">
+  <div class="code" data-element-id="{{ element_id }}">
+    <div class="controls">
+      <button class="font-size">+</button>
+      <button class="font-size">-</button>
+      <label for="theme">Theme</label>
+      <select id="theme">
+        <option value="default">Default</option>
+        <option value="blackboard">Blackboard</option>
+      </select>
+      <label for="language">Language</label>
+      <select id="language">
+        <option value="javascript">Javascript</option>
+        <option value="ruby">Ruby</option>
+        <option value="css">CSS</option>
+        <option value="htmlmixed">HTML</option>
+      </select>
+      <button class="save">Save</button>
+      <span class="status"></span>
+      <button class="delete">Delete</button>
+    </div>
+  </div>
+</script>
