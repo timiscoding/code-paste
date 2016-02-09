@@ -1,13 +1,6 @@
 var app = app || {};
 app.editors = {};
 app.editor_id = 0;
-// app.expiries = [
-//   { label: "Never", time: "" },
-//   { label: "10 minutes", time: moment().add(10, 'minutes').format() },
-//   { label: "1 hour", time: moment().add(1, 'hours').format() },
-//   { label: "1 day", time: moment().add(1, 'days').format() },
-//   { label: "1 week", time: moment().add(1, 'weeks').format() }
-// ];
 app.expiries = [ "Change expiry", "Never", "1 minute", "10 minutes", "1 hour", "1 day", "1 week" ];
 
 _.templateSettings = {
@@ -50,16 +43,13 @@ var createUpdateElement = function () {
     var $saveButton = $( this );
     $saveButton.prop('disabled', true);
     $saveButton.siblings('.status').text('Saving...');
-    //title, :page_id, :content, :link, :pos_x, :pos_y, :width, :height)
     var $codeElement = $( this ).closest('.code');
     var url = '/elements';
     var editor_id = $codeElement.data('editor-id');
-    var path_match = location.href.match( /pages\/(\d+)$/ );
-    var a_page_id = path_match[1];
     var code = {
       element: {
         title: 'new element',
-        page_id: a_page_id,
+        page_id: getPageID(),
         content: app.editors[editor_id].getValue(),
         link: 'www.google.com',
         pos_x: 1,
@@ -184,11 +174,10 @@ var updateExpiry = function() {
       }
     }
   }).done(function() {
-    $('#expiry-status').countdown('resume');
-    $('#expiry-status').text('Page expires: ' + countdownFromNow(expiry_time) );
+    $('#expiry-status').text('Page expires: ' + addExpiryCountdown(expiry_time) );
   }).fail(function() {
-    $('#expiry-status').countdown('pause');
-    $('#expiry-status').text('Something went wrong. Try again');
+    $('#expiry-status').remove(); // countdown is auto removed too
+    $('<span>').attr('id', 'expiry-status').text('Something went wrong. Try again').insertAfter('#expiry');
   });
 };
 
@@ -202,10 +191,7 @@ var timeFromNow = function(expiry_time) {
   return expiry;
 };
 
-var countdownFromNow = function(expiry_time) {
-  var expiry = moment(expiry_time);
-  // console.log('diff', expiry.diff(now, 'days'));
-
+var addExpiryCountdown = function(expiry_time) {
   if ( expiry_time ) {
     $("#expiry-status")
       .countdown(moment(expiry_time).toDate(), function(event) {
@@ -215,14 +201,13 @@ var countdownFromNow = function(expiry_time) {
         ftime += " %-M min %-S sec";
         // if ( !!event.offset.minutes ) { ftime += " %M min"}
         // if ( !!event.offset.seconds ) { ftime += " %S sec"}
-        $(this).text(
-          event.strftime(ftime) //'Page expires: %-D day%!D %H:%M:%S')
-        );
+        $(this).text( event.strftime(ftime) );
     }).on('finish.countdown', function(event) {
       $(this).text('Page expired!');
     });
   } else {
-    $("#expiry-status").text('never');
+      $('#expiry-status').remove(); // countdown is auto removed too
+      $('<span>').attr('id', 'expiry-status').text('Page expires: never').insertAfter('#expiry');
   }
 };
 
@@ -236,9 +221,6 @@ $(document).ready(function() {
 
   // populate expiry select input
   console.log('expiry ' + JSON.stringify(app.expiries) );
-  // app.expiries.forEach( function(expiry) {
-  //   $('#expiry').append( $('<option>').val(expiry.time).text(expiry.label) );
-  // });
   app.expiries.forEach( function( label ){
     $('select#expiry').append( $('<option>').text(label) );
   });
@@ -250,13 +232,9 @@ $(document).ready(function() {
   app.codeTemplater = _.template( $('#codeTemplate').html() );
 
   // get all elements for this page
-  var path_match = location.href.match( /pages\/(\d+)$/ );
-  var page_id = path_match[1];
-
-  $.getJSON('/pages/' + page_id).done( function (data) {
+  $.getJSON('/pages/' + getPageID()).done( function (data) {
     console.log('data for page');
-    // $('#expiry-status').text('Page expires: ' + timeFromNow(data.expiry) );
-    countdownFromNow(data.expiry);
+    addExpiryCountdown(data.expiry);
     data.elements.forEach( function(elt) {
       console.log(elt.title, elt.content);
       var $codeElement = createUIElement(elt.id);
@@ -269,8 +247,6 @@ $(document).ready(function() {
   });
 
   // editor.setSize(500, 100);
-
-
 
   $('.add-code').on('click', createUIElement);
 
@@ -290,6 +266,4 @@ $(document).ready(function() {
   $('body').on('click', '.code .save', createUpdateElement);
 
   $('body').on('click', '.code .delete', deleteElement);
-
-
 });
