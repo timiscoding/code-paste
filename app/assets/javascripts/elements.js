@@ -290,6 +290,6 @@ $(document).ready(function() {
   // remove widget
   // gridster.remove_widget( $('.gridster div').eq(3) );
 
-  // var gridArr = gridster.serialize();
-  // console.log('grid array', gridArr);
+  var gridArr = gridster.serialize();
+  console.log('grid array', gridArr);
 });
