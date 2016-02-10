@@ -3,4 +3,6 @@ json.elements @page.elements do |elt|
   json.id elt.id
   json.title elt.title
   json.content elt.content
+  json.width elt.width
+  json.height elt.height
 end

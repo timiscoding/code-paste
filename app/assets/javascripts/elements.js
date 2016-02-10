@@ -10,19 +10,17 @@ _.templateSettings = {
  interpolate : /\{\{([\s\S]+?)\}\}/g   // {{ key }} - interpolates
 };
 
-var createUIElement = function(an_element_id) {
+var createUIElement = function(element) {
   var templateArgs;
-  console.log('typeof ', an_element_id);
-  if (typeof an_element_id === 'number') {
-    templateArgs = { element_id: an_element_id };
-  } else {
-    templateArgs = { element_id: '' };
+  console.log('typeof ', element.id);
+  if (typeof element.id === 'number') {
+    templateArgs = { element_id: element.id };
   }
-  console.log('create code elt with elt id ', an_element_id);
-  var $codeElement = $( app.codeTemplater( templateArgs ) );
 
+  console.log('create code elt with elt id ', element.id, element.width, element.height);
+  var $codeElement = $( app.codeTemplater( templateArgs ) );
   // add another widget
-  app.gridster.add_widget( $('<div>').addClass('widget').append( $codeElement ), 3, 1);
+  app.gridster.add_widget( $('<div>').addClass('widget').append( $codeElement ), element.width || 3, element.height || 1);
   // $('body').append( $codeElement );
 
   // create a new editor and configure it
@@ -44,6 +42,26 @@ var createUIElement = function(an_element_id) {
 var generateEditorId = function() {
   return app.editor_id++;
 }
+
+var createElement = function () {
+    var url = '/elements';
+    var code = {
+      element: {
+        page_id: getPageID(),
+      }
+    };
+
+    $.ajax(url, {
+      method: 'post',
+      dataType: 'json',
+      data: code
+    }).done(function( element ){
+      console.log('created blank element with id', element.id);
+      createUIElement( element );
+    }).fail(function(){
+      $('#page-status').text("Something went wrong, try again.");
+    })
+};
 
 var createUpdateElement = function () {
     var $saveButton = $( this );
@@ -246,10 +264,24 @@ $(document).ready(function() {
           // debugger
           // refreshes the editor so the gutter flows all the way down the editor
           app.editors[ $widget.find('.code').data('editor-id') ].refresh();
+          var elt_id = $widget.find('.code').data('element-id');
+          var widget_params = app.gridster.serialize($widget)[0];
+          console.log('widget params', widget_params);
+          $.ajax('/elements/' + elt_id, {
+            dataType: 'json',
+            method: 'put',
+            data: {
+              element: widget_params
+            }
+          }).done(function(){
+            $('#page-status').text('Resize saved');
+          }).fail(function(){
+            $('#page-status').text('Resize failed to save. Try again');
+          });
         }
       },
       serialize_params: function ($w, wgd) {
-        console.log('grid widget, ', $w.text());
+        // console.log('grid widget, ', $w.text());
         return {
           pos_x: wgd.col,
           pos_y: wgd.row,
@@ -283,11 +315,13 @@ $(document).ready(function() {
     addExpiryCountdown(data.expiry);
     data.elements.forEach( function(elt) {
       console.log(elt.title, elt.content);
-      var $codeElement = createUIElement(elt.id);
+      var $codeElement = createUIElement(elt);
 
       $.getJSON('/elements/' + elt.id).done( function (data) {
         var editor_id = $codeElement.data('editor-id');
-        app.editors[editor_id].setValue(elt.content);
+        if (elt.content) {
+          app.editors[editor_id].setValue(elt.content);
+        }
         // debugger
         // $codeElement.parent('div').data('sizey') * app.grid_base_size
         app.editors[editor_id].setSize('100%', '100%');
@@ -296,7 +330,7 @@ $(document).ready(function() {
   });
 
 
-  $('.add-code').on('click', createUIElement);
+  $('.add-code').on('click', createElement);
 
   // when user types in editor, fire event
   // CodeMirrorInstance.on('changes', function(instance, changes){
