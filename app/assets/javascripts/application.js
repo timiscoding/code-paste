@@ -16,6 +16,7 @@
 //= require moment
 //= require jquery.countdown
 //= require aloha.min
+//= require jquery.gridster.with-extras
 //= require codemirror
 //= require codemirror/mode/javascript
 //= require codemirror/mode/ruby

@@ -12,6 +12,7 @@
  *
  *= require codemirror
  *= require blackboard
+ *= require jquery.gridster
  *= require_tree .
  *= require_self
  */

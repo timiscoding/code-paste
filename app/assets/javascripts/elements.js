@@ -266,4 +266,30 @@ $(document).ready(function() {
   $('body').on('click', '.code .save', createUpdateElement);
 
   $('body').on('click', '.code .delete', deleteElement);
+
+  // set up grid for div.gridster
+  $(".gridster").gridster({
+      widget_selector: 'div',
+      widget_margins: [2, 2],
+      widget_base_dimensions: [140, 140],
+      resize: { enabled: true },
+      serialize_params: function ($w, wgd) {
+        console.log('grid widget, ', $w.text());
+        return {
+          pos_x: wgd.col,
+          pos_y: wgd.row,
+          width: wgd.size_x,
+          height: wgd.size_y
+        };
+      }
+  });
+  // get gridster instance
+  var gridster = $(".gridster").gridster().data('gridster');
+  // add another widget
+  gridster.add_widget('<div class="new">The HTML of the widget...</div>', 2, 1);
+  // remove widget
+  // gridster.remove_widget( $('.gridster div').eq(3) );
+
+  // var gridArr = gridster.serialize();
+  // console.log('grid array', gridArr);
 });
