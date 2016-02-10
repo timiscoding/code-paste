@@ -3,7 +3,7 @@ app.editors = {};
 app.editor_id = 0;
 app.expiries = [ "Change expiry", "Never", "1 minute", "10 minutes", "1 hour", "1 day", "1 week" ];
 app.gridster_base_width = 160;
-app.gridster_base_height = 160;
+app.gridster_base_height = app.gridster_base_width;
 
 _.templateSettings = {
  evaluate : /\{\[([\s\S]+?)\]\}/g,     // {[ console.log("Hello"); ]} - runs
@@ -17,10 +17,10 @@ var createUIElement = function(element) {
     templateArgs = { element_id: element.id };
   }
 
-  console.log('create code elt with elt id ', element.id, element.width, element.height);
+  console.log('create code elt with elt id ', element.id, 'width: ', element.width, 'height ', element.height, 'x ', element.pos_x, 'y ', element.pos_y);
   var $codeElement = $( app.codeTemplater( templateArgs ) );
   // add another widget
-  app.gridster.add_widget( $('<div>').addClass('widget').append( $codeElement ), element.width || 3, element.height || 1);
+  app.gridster.add_widget( $('<div>').addClass('widget').append( $codeElement ), element.width || 3, element.height || 1, element.pos_x, element.pos_y);
   // $('body').append( $codeElement );
 
   // create a new editor and configure it
@@ -243,6 +243,23 @@ var getPageID = function() {
   return path_match[1];
 };
 
+var updateWidgetParams = function($widget) {
+  var widget_params = app.gridster.serialize($widget)[0];
+  console.log('widget params', widget_params);
+  var elt_id = $widget.find('.code').data('element-id');
+  $.ajax('/elements/' + elt_id, {
+    dataType: 'json',
+    method: 'put',
+    data: {
+      element: widget_params
+    }
+  }).done(function(){
+    $('#page-status').text('Widget resize/position saved');
+  }).fail(function(){
+    $('#page-status').text('Widget resize/position failed to save. Try again');
+  });
+};
+
 $(document).ready(function() {
   console.log('running js');
 
@@ -252,7 +269,13 @@ $(document).ready(function() {
       widget_margins: [2, 2],
       widget_base_dimensions: [app.gridster_base_width, app.gridster_base_height],
       draggable: {
-        handle: '.widget'
+        handle: '.widget',
+        stop: function(event, ui) {
+          $widget = $(event.target);
+          var widget_params = app.gridster.serialize($widget)[0];
+          console.log('dragging stopped ', $widget, widget_params);
+          updateWidgetParams( $widget );
+        }
       },
       resize: {
         enabled: true,
@@ -264,20 +287,8 @@ $(document).ready(function() {
           // debugger
           // refreshes the editor so the gutter flows all the way down the editor
           app.editors[ $widget.find('.code').data('editor-id') ].refresh();
-          var elt_id = $widget.find('.code').data('element-id');
-          var widget_params = app.gridster.serialize($widget)[0];
-          console.log('widget params', widget_params);
-          $.ajax('/elements/' + elt_id, {
-            dataType: 'json',
-            method: 'put',
-            data: {
-              element: widget_params
-            }
-          }).done(function(){
-            $('#page-status').text('Resize saved');
-          }).fail(function(){
-            $('#page-status').text('Resize failed to save. Try again');
-          });
+
+          updateWidgetParams( $widget );
         }
       },
       serialize_params: function ($w, wgd) {
