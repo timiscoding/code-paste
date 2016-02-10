@@ -75,11 +75,7 @@ var createUpdateElement = function () {
         title: 'new element',
         page_id: getPageID(),
         content: app.editors[editor_id].getValue(),
-        link: 'www.google.com',
-        pos_x: 1,
-        pos_y: 2,
-        width: 500,
-        height: 100
+        link: 'www.google.com'
       }
     };
 
