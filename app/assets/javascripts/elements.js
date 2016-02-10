@@ -2,6 +2,8 @@ var app = app || {};
 app.editors = {};
 app.editor_id = 0;
 app.expiries = [ "Change expiry", "Never", "1 minute", "10 minutes", "1 hour", "1 day", "1 week" ];
+app.gridster_base_width = 160;
+app.gridster_base_height = 160;
 
 _.templateSettings = {
  evaluate : /\{\[([\s\S]+?)\]\}/g,     // {[ console.log("Hello"); ]} - runs
@@ -18,7 +20,10 @@ var createUIElement = function(an_element_id) {
   }
   console.log('create code elt with elt id ', an_element_id);
   var $codeElement = $( app.codeTemplater( templateArgs ) );
-  $('body').append( $codeElement );
+
+  // add another widget
+  app.gridster.add_widget( $('<div>').addClass('widget').append( $codeElement ), 3, 1);
+  // $('body').append( $codeElement );
 
   // create a new editor and configure it
   var editor = CodeMirror(function (editor) {
@@ -29,6 +34,7 @@ var createUIElement = function(an_element_id) {
       tabSize: 2,
       lineNumbers: true
   });
+  editor.setSize('100%', '100%');
   var new_editor_id = generateEditorId();
   $codeElement.data('editor-id', new_editor_id);
   app.editors[new_editor_id] = editor;
@@ -89,6 +95,7 @@ var createUpdateElement = function () {
 var deleteElement = function() {
   console.log('delete element', this);
   var $codeElement = $( this ).closest('.code');
+  var $widget = $codeElement.parent('div');
   var editor_id = $codeElement.data('editor-id');
   var elt_id = $codeElement.data('element-id');
   var url = '/elements/' + elt_id;
@@ -98,14 +105,16 @@ var deleteElement = function() {
       dataType: 'json'
     }).done(function() {
       console.log('element destroyed. editor_id ', editor_id);
-      $codeElement.remove();
+      // $codeElement.remove();
       delete app.editors[editor_id];
+      app.gridster.remove_widget( $widget );
     }).fail(function() {
       $codeElement.find('.status').text('Something went wrong. Try again');
     });
   } else { // element doesn't exist on server so just remove the gui element
-    $codeElement.remove();
+    // $codeElement.remove();
     delete app.editors[editor_id];
+    app.gridster.remove_widget( $widget );
   }
 };
 
@@ -219,6 +228,43 @@ var getPageID = function() {
 $(document).ready(function() {
   console.log('running js');
 
+  // set up gridster and store it as a global instance
+  app.gridster = $(".gridster").gridster({
+      widget_selector: 'div',
+      widget_margins: [2, 2],
+      widget_base_dimensions: [app.gridster_base_width, app.gridster_base_height],
+      draggable: {
+        handle: '.widget'
+      },
+      resize: {
+        enabled: true,
+        min_size: [3, 1],
+        stop: function(e, ui, $widget) {
+          console.log('e', e);
+          console.log('ui', ui);
+          console.log('$widget', $widget);
+          // debugger
+          // refreshes the editor so the gutter flows all the way down the editor
+          app.editors[ $widget.find('.code').data('editor-id') ].refresh();
+        }
+      },
+      serialize_params: function ($w, wgd) {
+        console.log('grid widget, ', $w.text());
+        return {
+          pos_x: wgd.col,
+          pos_y: wgd.row,
+          width: wgd.size_x,
+          height: wgd.size_y
+        };
+      }
+  }).data('gridster');
+
+  // remove widget
+  // gridster.remove_widget( $('.gridster div').eq(3) );
+
+  var gridArr = app.gridster.serialize();
+  console.log('grid array', gridArr);
+
   // populate expiry select input
   console.log('expiry ' + JSON.stringify(app.expiries) );
   app.expiries.forEach( function( label ){
@@ -242,11 +288,13 @@ $(document).ready(function() {
       $.getJSON('/elements/' + elt.id).done( function (data) {
         var editor_id = $codeElement.data('editor-id');
         app.editors[editor_id].setValue(elt.content);
+        // debugger
+        // $codeElement.parent('div').data('sizey') * app.grid_base_size
+        app.editors[editor_id].setSize('100%', '100%');
       });
     });
   });
 
-  // editor.setSize(500, 100);
 
   $('.add-code').on('click', createUIElement);
 
@@ -267,29 +315,5 @@ $(document).ready(function() {
 
   $('body').on('click', '.code .delete', deleteElement);
 
-  // set up grid for div.gridster
-  $(".gridster").gridster({
-      widget_selector: 'div',
-      widget_margins: [2, 2],
-      widget_base_dimensions: [140, 140],
-      resize: { enabled: true },
-      serialize_params: function ($w, wgd) {
-        console.log('grid widget, ', $w.text());
-        return {
-          pos_x: wgd.col,
-          pos_y: wgd.row,
-          width: wgd.size_x,
-          height: wgd.size_y
-        };
-      }
-  });
-  // get gridster instance
-  var gridster = $(".gridster").gridster().data('gridster');
-  // add another widget
-  gridster.add_widget('<div class="new">The HTML of the widget...</div>', 2, 1);
-  // remove widget
-  // gridster.remove_widget( $('.gridster div').eq(3) );
 
-  var gridArr = gridster.serialize();
-  console.log('grid array', gridArr);
 });

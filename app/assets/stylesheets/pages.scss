@@ -3,6 +3,45 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
-.gridster div {
-  background: lightgrey;
+.gridster .widget {
+  padding: 20px;
+   -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.code {
+  height: calc(100% - 20px); // keeps editor within gridster widget if lots new lines are entered
+}
+
+.CodeMirror {
+  cursor: text;
+}
+
+.gridster {
+    /*margin: 0 auto;
+
+    opacity: .8;
+*/
+    -webkit-transition: opacity .6s;
+    -moz-transition: opacity .6s;
+    -o-transition: opacity .6s;
+    -ms-transition: opacity .6s;
+    transition: opacity .6s;
+    background-color: #EFF;
+}
+
+.gridster .gs-w {
+    background: #DDD; // widget color
+    cursor: move;
+}
+
+.gridster .player {
+    background: #BBB; // change widget color on drag
+}
+
+
+.gridster .preview-holder {
+    border: none!important;
+    background: green!important;
 }
