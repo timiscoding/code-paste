@@ -1,4 +1,5 @@
 
+<input type="text" id="page-title" placeholder="Page title (optional)" value="<%= @page.title %>"/>
 <select id="expiry"></select>
 <span id="expiry-status"></span>
 <span id="page-status"></span>
@@ -25,6 +26,7 @@
       <span class="status"></span>
       <button class="delete">Delete</button>
     </div>
+    <input type="text" class="element-title" placeholder="Code snippet label (optional)" value="{{ element_title }}"/>
   </div>
 </script>
 

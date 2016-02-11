@@ -14,7 +14,10 @@ var createUIElement = function(element) {
   var templateArgs;
   console.log('typeof ', element.id);
   if (typeof element.id === 'number') {
-    templateArgs = { element_id: element.id };
+    templateArgs = {
+      element_id: element.id,
+      element_title: element.title
+    };
   }
 
   console.log('create code elt with elt id ', element.id, 'width: ', element.width, 'height ', element.height, 'x ', element.pos_x, 'y ', element.pos_y);
@@ -72,13 +75,12 @@ var createUpdateElement = function () {
     var editor_id = $codeElement.data('editor-id');
     var code = {
       element: {
-        title: 'new element',
+        title: $codeElement.find('.element-title').val(),
         page_id: getPageID(),
         content: app.editors[editor_id].getValue(),
         link: 'www.google.com'
       }
     };
-
     var methodType, url;
     var elt_id = $codeElement.data('element-id'); // element id that identifies an element in rails
     console.log(elt_id);
@@ -356,5 +358,22 @@ $(document).ready(function() {
 
   $('body').on('click', '.code .delete', deleteElement);
 
+  $('#page-title').on('blur', function() {
+    var page_title = $( this ).val();
+    console.log('Save title ', page_title);
+    $.ajax('/pages/' + getPageID(), {
+      method: 'put',
+      dataType: 'json',
+      data: {
+        page: {
+          title: page_title
+        }
+      }
+    }).done(function() {
+      $('#page-status').text('Page title updated');
+    }).fail(function() {
+      $('#page-status').text("Page title not updated on server. Try again");
 
+    });
+  });
 });
