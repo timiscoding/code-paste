@@ -12,7 +12,7 @@ _.templateSettings = {
 
 var createUIElement = function(element) {
   var templateArgs;
-  console.log('typeof ', element.id);
+  console.log('createUIElement ', element);
   if (typeof element.id === 'number') {
     templateArgs = {
       element_id: element.id,
@@ -22,6 +22,10 @@ var createUIElement = function(element) {
 
   console.log('create code elt with elt id ', element.id, 'width: ', element.width, 'height ', element.height, 'x ', element.pos_x, 'y ', element.pos_y);
   var $codeElement = $( app.codeTemplater( templateArgs ) );
+  // preset the language & theme to what the user last selected
+  $codeElement.find('#theme').val(element.theme);
+  $codeElement.find('#language').val(element.language);
+
   // add another widget
   app.gridster.add_widget( $('<div>').addClass('widget').append( $codeElement ), element.width || 3, element.height || 1, element.pos_x, element.pos_y);
   // $('body').append( $codeElement );
@@ -33,11 +37,19 @@ var createUIElement = function(element) {
     }, {
       value: '// your code here',
       tabSize: 2,
-      lineNumbers: true
+      lineNumbers: true,
+      theme: element.theme || '',
+      mode: element.language || ''
   });
   editor.setSize('100%', '100%');
+
+  // preset font size to what the user last selected
+  if (element.font_size) {
+    $codeElement.find('.CodeMirror').css('font-size', element.font_size + 'px');
+  }
+
   // bind event handler to editor
-  CodeMirror.on(editor, 'update', function(editor) {
+  CodeMirror.on(editor, 'changes', function(editor) {
     console.log('editor updated ');
     var codeElement = $( editor.getWrapperElement() ).parent('.code');
     // console.log('codeElement ', codeElement.html());
@@ -139,31 +151,52 @@ var deleteElement = function() {
 };
 
 var changeLanguageOrTheme = function(event) {
+  var settings = {};
   console.log('select changed');
   var $codeElement = $( this ).closest('.code');
+  var elt_id = $codeElement.data('element-id');
   var editor_id = $codeElement.data('editor-id');
   var setting = $(this).attr('id');
   var settingVal = $(this).val();
   if ( setting === 'theme' ) {
     app.editors[editor_id].setOption('theme', settingVal );
+    settings['theme'] = settingVal;
   } else if ( setting === 'language') {
     app.editors[editor_id].setOption('mode', settingVal );
+    settings['language'] = settingVal;
   }
+  updateElementSettings(elt_id, settings);
 };
 
 var changeFontSize = function() {
   var $codeElement = $( this ).closest('.code');
+  var elt_id = $codeElement.data('element-id');
   var editor_id = $codeElement.data('editor-id');
   var cur_size = parseInt( $codeElement.find('.CodeMirror').css('font-size') );
+  var new_size;
   if ( $(this).text() === '+' ) {
-  console.log('font size inc', cur_size);
-    $codeElement.find('.CodeMirror').css('font-size', (cur_size + 2) + 'px');
+  console.log('font size ', cur_size);
+    new_size = cur_size + 2;
+    $codeElement.find('.CodeMirror').css('font-size', new_size + 'px');
   } else {
     console.log('dec size');
-    $codeElement.find('.CodeMirror').css('font-size', (cur_size - 2) + 'px');
+    new_size = cur_size - 2;
+    $codeElement.find('.CodeMirror').css('font-size', new_size + 'px');
   }
   app.editors[editor_id].refresh(); // update editor so cursor aligns with font resizing
+  throttledUpdateElementSettings(elt_id, { font_size: new_size });
 };
+
+var updateElementSettings = function(element_id, settings) {
+  $.ajax('/elements/' + element_id, {
+    method: 'put',
+    dataType: 'json',
+    data: {
+      element: settings
+    }
+  });
+};
+var throttledUpdateElementSettings = _.throttle(updateElementSettings, 5000);
 
 var updateExpiry = function() {
   var selected = $( this ).find('option:selected').text();
@@ -345,11 +378,6 @@ $(document).ready(function() {
 
   $('.add-code').on('click', createElement);
 
-  // when user types in editor, fire event
-  // CodeMirrorInstance.on('changes', function(instance, changes){
-  //   console.log('editor changed', instance.getWrapperElement().parentNode);
-  // });
-
   // when a font size button is pressed, increase/decrease font size
   $('body').on('click', '.code .font-size', changeFontSize);
 
@@ -357,26 +385,11 @@ $(document).ready(function() {
   console.log('modes', CodeMirror.modes, CodeMirror.mimeModes);
   $('body').on('change', '.code select', changeLanguageOrTheme);
 
-  // send an AJAX POST request to create/update a new element
-
-  // $('body').on('keydown paste', '.code', function(e) {
-  //   if (e.which === 37 || // left arrow
-  //     e.which === 38 || // up arrow
-  //     e.which === 39 || // right arrow
-  //     e.which === 40 || // down arrow
-  //     e.which === 13 || // enter key
-  //          e.ctrlKey ||
-  //          e.metaKey ||
-  //          e.altKey){
-  //     console.log('non-printable key');
-  //     return;
-  //   }
-  //   throttledCreateUpdateElement(this);
-  // });
-
   $('body').on('click', '.code .delete', deleteElement);
 
-  // attempt to save all elements before tab closes.
+  // attempt to save all elements before tab closes. this is to safeguard
+  // against the situation when you type something and close the tab before
+  // autosave kicks in 5s later.
   // doesn't guarantee it gets saved as the ajax call could still fail for
   // element update. not enough time to fix this yet
   $(window).on('beforeunload', function(){

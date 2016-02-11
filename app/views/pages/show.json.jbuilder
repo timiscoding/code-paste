@@ -11,4 +11,7 @@ json.elements @page.elements.order(:pos_y, :pos_x) do |elt|
   json.height elt.height
   json.pos_x elt.pos_x
   json.pos_y elt.pos_y
+  json.font_size elt.font_size
+  json.theme elt.theme
+  json.language elt.language
 end
