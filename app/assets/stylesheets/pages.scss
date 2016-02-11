@@ -2,20 +2,21 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-
 .gridster .widget {
-  padding: 20px;
+  padding: 5px 15px 15px 15px;
+  border-radius: 5px;
    -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
 }
 
 .code {
-  height: calc(100% - 20px); // keeps editor within gridster widget if lots new lines are entered
+  height: calc(100% - 4em); // keeps editor within gridster widget if lots new lines are entered
 }
 
 .CodeMirror {
   cursor: text;
+  border: none;
 }
 
 .gridster {
@@ -44,4 +45,38 @@
 .gridster .preview-holder {
     border: none!important;
     background: green!important;
+}
+
+#expiry-status {
+  margin-left: 10px;
+}
+
+header {
+  background: lightblue;
+  display: flex;
+  justify-content: space-between;
+  .title {
+    display: inline-block;
+    margin: 10px;
+    font-size: 2em;
+  }
+  .page-controls {
+    margin: 10px;
+    display: inline-block;
+    text-align: right;
+    list-style-type: none;
+    li {
+      display: inline;
+    }
+    li:not(:first-child):not(:last-child) {
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+  }
+}
+
+
+
+#page-status {
+
 }

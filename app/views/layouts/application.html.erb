@@ -8,6 +8,25 @@
 </head>
 <body>
 
+<header>
+  <div class="title">Code paste</div>
+  <ul class="page-controls">
+    <li>
+      <input type="text" id="page-title" placeholder="Page title (optional)" value="<%= @page.title %>"/>
+    </li>
+    <li>
+      <select id="expiry"></select>
+      <span id="expiry-status"></span>
+    </li>
+    <li>
+      <span id="page-status"></span>
+    </li>
+    <li>
+      <button class="add-code"><i class="fa fa-plus"></i>New snippet</button>
+    </li>
+  </ul>
+</header>
+
 <%= yield %>
 
 </body>

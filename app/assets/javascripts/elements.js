@@ -174,7 +174,7 @@ var changeFontSize = function() {
   var editor_id = $codeElement.data('editor-id');
   var cur_size = parseInt( $codeElement.find('.CodeMirror').css('font-size') );
   var new_size;
-  if ( $(this).text() === '+' ) {
+  if ( $(this).hasClass('inc') ) {
   console.log('font size ', cur_size);
     new_size = cur_size + 2;
     $codeElement.find('.CodeMirror').css('font-size', new_size + 'px');

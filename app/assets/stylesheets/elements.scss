@@ -14,3 +14,25 @@ button.active {
 .element-title {
   width: 100%;
 }
+
+#font-span {
+  vertical-align: middle;
+}
+
+.delete {
+  float: right;
+}
+
+.font-size.inc {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.font-size.dec {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+input.element-title {
+  border-radius: 0px;
+}
