@@ -19,46 +19,46 @@
  *= require_self
  */
 
-// @import "font-awesome-sprockets";
-// @import "font-awesome";
+@import "font-awesome-sprockets";
+@import "font-awesome";
 
-// body {
-//   background-image: url('code.jpeg');
-//   background-size: cover;
-// }
+body {
+  background-image: url('code.jpeg');
+  background-size: cover;
+}
 
-// .wrapper {
-//   max-width: 1200px;
-//   margin: 48px auto 0 auto;
-//   min-height: calc(100vh - 48px);
+.wrapper {
+  max-width: 1200px;
+  margin: 48px auto 0 auto;
+  min-height: calc(100vh - 48px);
 
-// }
+}
 
-// .flexcontainer {
-//   min-height: calc(100vh - 48px);
-//    display: -webkit-flex;
-//    display: flex;
-//    -webkit-flex-direction: column; /* works with row or column */
-//    flex-direction: column;
-//    -webkit-align-items: center;
-//    align-items: center;
-//    -webkit-justify-content: center;
-//    justify-content: center;
-// }
+.flexcontainer {
+  min-height: calc(100vh - 48px);
+   display: -webkit-flex;
+   display: flex;
+   -webkit-flex-direction: column; /* works with row or column */
+   flex-direction: column;
+   -webkit-align-items: center;
+   align-items: center;
+   -webkit-justify-content: center;
+   justify-content: center;
+}
 
-// div.about {
-//   background: lightblue;
-//   opacity: 0.9;
-//   text-align: center;
-//   border-radius: 5px;
-//   padding: 1em;
+div.about {
+  background: lightblue;
+  opacity: 0.9;
+  text-align: center;
+  border-radius: 5px;
+  padding: 1em;
 
-//   a {
-//     text-decoration: none;
-//     background-color: #2196F3;
-//     color: white;
-//     padding: 1em;
-//     text-size: 1em;
-//     border-radius: 5px;
-//   }
-// }
+  a {
+    text-decoration: none;
+    background-color: #2196F3;
+    color: white;
+    padding: 1em;
+    text-size: 1em;
+    border-radius: 5px;
+  }
+}

@@ -1,92 +1,92 @@
-// // Place all the styles related to the Pages controller here.
-// // They will automatically be included in application.css.
-// // You can use Sass (SCSS) here: http://sass-lang.com/
+// Place all the styles related to the Pages controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
 
 
-// .gridster .widget {
-//   padding: 5px 15px 15px 15px;
-//   border-radius: 5px;
-//   -webkit-box-sizing: border-box;
-//      -moz-box-sizing: border-box;
-//           box-sizing: border-box;
-// }
+.gridster .widget {
+  padding: 5px 15px 15px 15px;
+  border-radius: 5px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
 
-// .code {
-//   height: calc(100% - 4em); // keeps editor within gridster widget if lots new lines are entered
-// }
+.code {
+  height: calc(100% - 4em); // keeps editor within gridster widget if lots new lines are entered
+}
 
-// .CodeMirror {
-//   cursor: text;
-//   border: none;
-// }
+.CodeMirror {
+  cursor: text;
+  border: none;
+}
 
-// .gridster {
-//   opacity: 1;
-//   z-index: 0;
+.gridster {
+  opacity: 1;
+  z-index: 0;
 
-//   -webkit-transition: opacity .6s;
-//   -moz-transition: opacity .6s;
-//   -o-transition: opacity .6s;
-//   -ms-transition: opacity .6s;
-//   transition: opacity .6s;
-//   background-color: #EFF;
-// }
+  -webkit-transition: opacity .6s;
+  -moz-transition: opacity .6s;
+  -o-transition: opacity .6s;
+  -ms-transition: opacity .6s;
+  transition: opacity .6s;
+  background-color: #EFF;
+}
 
-// .gridster .gs-w {
-//     background: #DDD; // widget color
-//     cursor: move;
-// }
+.gridster .gs-w {
+    background: #DDD; // widget color
+    cursor: move;
+}
 
-// .gridster .player {
-//     background: #BBB; // change widget color on drag
-// }
+.gridster .player {
+    background: #BBB; // change widget color on drag
+}
 
 
-// .gridster .preview-holder {
-//     border: none!important;
-//     background: green!important;
-// }
+.gridster .preview-holder {
+    border: none!important;
+    background: green!important;
+}
 
-// #expiry-status {
-//   margin-left: 10px;
-// }
+#expiry-status {
+  margin-left: 10px;
+}
 
-// header {
-//   z-index: 1;
-//   position: fixed;
-//   left: 0px;
-//   top: 0px;
-//   width: 100%;
-//   background: lightblue;
-//   display: flex;
-//   justify-content: space-between;
-//   .title {
-//     display: inline-block;
-//     margin: 10px;
-//     font-size: 2em;
-//   }
-//   .page-controls {
-//     margin: 10px;
-//     display: inline-block;
-//     text-align: right;
-//     list-style-type: none;
-//     li {
-//       display: inline;
-//     }
-//     li:not(:first-child):not(:last-child) {
-//       margin-left: 20px;
-//       margin-right: 20px;
-//     }
-//   }
-//   a {
-//     text-decoration: none;
-//   }
-//   a:hover {
-//     background: lightblue;
-//     color: black;
-//   }
-// }
+header {
+  z-index: 1;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  background: lightblue;
+  display: flex;
+  justify-content: space-between;
+  .title {
+    display: inline-block;
+    margin: 10px;
+    font-size: 2em;
+  }
+  .page-controls {
+    margin: 10px;
+    display: inline-block;
+    text-align: right;
+    list-style-type: none;
+    li {
+      display: inline;
+    }
+    li:not(:first-child):not(:last-child) {
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+  }
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    background: lightblue;
+    color: black;
+  }
+}
 
-// button.home {
-//   height: 4em;
-// }
+button.home {
+  height: 4em;
+}
