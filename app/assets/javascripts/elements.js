@@ -1,5 +1,5 @@
 var app = app || {};
-app.editors = {};
+app.editors = {}; // key = generateEditorId(), value = CodeMirror instance
 app.editor_id = 0;
 app.expiries = [ "Change expiry", "Never", "1 minute", "10 minutes", "1 hour", "1 day", "1 week" ];
 app.gridster_base_width = 160;
@@ -36,6 +36,14 @@ var createUIElement = function(element) {
       lineNumbers: true
   });
   editor.setSize('100%', '100%');
+  // bind event handler to editor
+  CodeMirror.on(editor, 'update', function(editor) {
+    console.log('editor updated ');
+    var codeElement = $( editor.getWrapperElement() ).parent('.code');
+    // console.log('codeElement ', codeElement.html());
+
+    throttledCreateUpdateElement( codeElement );
+  });
   var new_editor_id = generateEditorId();
   $codeElement.data('editor-id', new_editor_id);
   app.editors[new_editor_id] = editor;
@@ -81,7 +89,7 @@ var createUpdateElement = function (element) {
     };
     var methodType, url;
     var elt_id = $codeElement.data('element-id'); // element id that identifies an element in rails
-    console.log(elt_id);
+    console.log('updating element with content: ', code);
     if ( elt_id ) { // element id exists so update an existing element in rails
       methodType = 'put';
       url = '/elements/' + elt_id;
@@ -102,6 +110,7 @@ var createUpdateElement = function (element) {
       $('#page-status').text("Couldn't auto save code snippet. Try again" );
     });
 };
+var throttledCreateUpdateElement = _.throttle( createUpdateElement, 5000 );
 
 var deleteElement = function() {
   console.log('delete element', this);
@@ -349,21 +358,21 @@ $(document).ready(function() {
   $('body').on('change', '.code select', changeLanguageOrTheme);
 
   // send an AJAX POST request to create/update a new element
-  var throttledCreateUpdateElement = _.throttle( createUpdateElement, 5000 )
-  $('body').on('keydown paste', '.code', function(e) {
-    if (e.which === 37 || // left arrow
-      e.which === 38 || // up arrow
-      e.which === 39 || // right arrow
-      e.which === 40 || // down arrow
-      e.which === 13 || // enter key
-           e.ctrlKey ||
-           e.metaKey ||
-           e.altKey){
-      console.log('non-printable key');
-      return;
-    }
-    throttledCreateUpdateElement(this);
-  });
+
+  // $('body').on('keydown paste', '.code', function(e) {
+  //   if (e.which === 37 || // left arrow
+  //     e.which === 38 || // up arrow
+  //     e.which === 39 || // right arrow
+  //     e.which === 40 || // down arrow
+  //     e.which === 13 || // enter key
+  //          e.ctrlKey ||
+  //          e.metaKey ||
+  //          e.altKey){
+  //     console.log('non-printable key');
+  //     return;
+  //   }
+  //   throttledCreateUpdateElement(this);
+  // });
 
   $('body').on('click', '.code .delete', deleteElement);
 
