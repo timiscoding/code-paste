@@ -6,8 +6,8 @@
 .gridster .widget {
   padding: 5px 15px 15px 15px;
   border-radius: 5px;
-/*   -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box; */
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
           box-sizing: border-box;
 }
 
@@ -21,17 +21,15 @@
 }
 
 .gridster {
+  opacity: 1;
+  z-index: 0;
 
-
-    opacity: 1;
-    z-index: 0;
-
-    -webkit-transition: opacity .6s;
-    -moz-transition: opacity .6s;
-    -o-transition: opacity .6s;
-    -ms-transition: opacity .6s;
-    transition: opacity .6s;
-    background-color: #EFF;
+  -webkit-transition: opacity .6s;
+  -moz-transition: opacity .6s;
+  -o-transition: opacity .6s;
+  -ms-transition: opacity .6s;
+  transition: opacity .6s;
+  background-color: #EFF;
 }
 
 .gridster .gs-w {
