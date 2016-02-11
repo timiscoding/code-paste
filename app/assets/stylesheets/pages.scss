@@ -2,6 +2,7 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+
 .gridster .widget {
   padding: 5px 15px 15px 15px;
   border-radius: 5px;
@@ -20,10 +21,11 @@
 }
 
 .gridster {
-    /*margin: 0 auto;
 
-    opacity: .8;
-*/
+
+    opacity: 1;
+    z-index: 0;
+
     -webkit-transition: opacity .6s;
     -moz-transition: opacity .6s;
     -o-transition: opacity .6s;
@@ -52,6 +54,11 @@
 }
 
 header {
+  z-index: 1;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
   background: lightblue;
   display: flex;
   justify-content: space-between;
@@ -73,10 +80,15 @@ header {
       margin-right: 20px;
     }
   }
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    background: lightblue;
+    color: black;
+  }
 }
 
-
-
-#page-status {
-
+button.home {
+  height: 4em;
 }

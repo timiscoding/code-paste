@@ -9,7 +9,8 @@
 <body>
 
 <header>
-  <div class="title">Code paste</div>
+  <div class="title"><a href="<%= root_path %>">Code paste</a></div>
+  <% if params[:action] == "show" %>
   <ul class="page-controls">
     <li>
       <input type="text" id="page-title" placeholder="Page title (optional)" value="<%= @page.title %>"/>
@@ -25,9 +26,12 @@
       <button class="add-code"><i class="fa fa-plus"></i>New snippet</button>
     </li>
   </ul>
+  <% end %>
 </header>
 
+<div class="wrapper">
 <%= yield %>
+</div>
 
 </body>
 </html>
