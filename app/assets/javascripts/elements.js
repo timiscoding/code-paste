@@ -66,11 +66,10 @@ var createElement = function () {
     })
 };
 
-var createUpdateElement = function () {
-    var $saveButton = $( this );
-    $saveButton.prop('disabled', true);
-    $saveButton.siblings('.status').text('Saving...');
-    var $codeElement = $( this ).closest('.code');
+var createUpdateElement = function (element) {
+  console.log('key up in ', this );
+
+    var $codeElement = $( element );
     var url = '/elements';
     var editor_id = $codeElement.data('editor-id');
     var code = {
@@ -78,7 +77,6 @@ var createUpdateElement = function () {
         title: $codeElement.find('.element-title').val(),
         page_id: getPageID(),
         content: app.editors[editor_id].getValue(),
-        link: 'www.google.com'
       }
     };
     var methodType, url;
@@ -99,12 +97,9 @@ var createUpdateElement = function () {
     }).done(function( response ){
       console.log('saved. codeElement', $codeElement, response.id);
       $codeElement.data('element-id', response.id);
-
-      $saveButton.siblings('.status').text("Last updated: " + moment().format('h:mm:ss a') );
+      $('#page-status').text("Last auto saved: " + moment().format('h:mm:ss a') );
     }).fail(function(){
-      $saveButton.siblings('.status').text("Something went wrong, try again.");
-    }).always(function() {
-      $saveButton.prop('disabled', false);
+      $('#page-status').text("Couldn't auto save code snippet. Try again" );
     });
 };
 
@@ -354,9 +349,36 @@ $(document).ready(function() {
   $('body').on('change', '.code select', changeLanguageOrTheme);
 
   // send an AJAX POST request to create/update a new element
-  $('body').on('click', '.code .save', createUpdateElement);
+  var throttledCreateUpdateElement = _.throttle( createUpdateElement, 5000 )
+  $('body').on('keydown paste', '.code', function(e) {
+    if (e.which === 37 || // left arrow
+      e.which === 38 || // up arrow
+      e.which === 39 || // right arrow
+      e.which === 40 || // down arrow
+      e.which === 13 || // enter key
+           e.ctrlKey ||
+           e.metaKey ||
+           e.altKey){
+      console.log('non-printable key');
+      return;
+    }
+    throttledCreateUpdateElement(this);
+  });
 
   $('body').on('click', '.code .delete', deleteElement);
+
+  // attempt to save all elements before tab closes.
+  // doesn't guarantee it gets saved as the ajax call could still fail for
+  // element update. not enough time to fix this yet
+  $(window).on('beforeunload', function(){
+    console.log('see yaaaaa');
+    $('.code').each( function(index, codeElement) {
+      console.log('code elt ', codeElement);
+      // $codeElement.data('')
+      createUpdateElement(codeElement);
+    });
+    // return "Do you really want to close?";
+  });
 
   $('#page-title').on('blur', function() {
     var page_title = $( this ).val();
